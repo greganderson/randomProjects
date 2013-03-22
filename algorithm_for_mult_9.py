@@ -1,5 +1,9 @@
 #! /usr/bin/env python
 
+# This was discovered by me and my wife during our anniversary dinner.
+# Talk about true nerds.  Thankfully my wife is willing to put up with
+# my weirdness.
+
 def main():
 
     # Algorithm for multiplying by 9
