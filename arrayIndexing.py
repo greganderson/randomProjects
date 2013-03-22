@@ -1,31 +1,28 @@
 #! /usr/bin/env python
 
-def main():
-	row1 = [0, 1, 2]
-	row2 = [3, 4, 5]
-	row3 = [6, 7, 8]
-	row4 = [9, 10, 11]
-	row5 = [12, 13, 14]
-	test = []
-	test.append(row1)
-	test.append(row2)
-	test.append(row3)
-	test.append(row4)
-	test.append(row5)
-	print test
-	getPos(2,test)
-	getPos(4,test)
-	getPos(8,test)
-	getPos(5,test)
-	getPos(12,test)
-	getPos(11,test)
-	getPos(14,test)
+arr = []	# 2D Array with numbers 0-(rows*cols - 1) filling the indices
 
-def getPos(pos, arr):
+rows = input("Rows: ")
+cols = input("Columns: ")
+
+def main():
+	# Fill the 2D Array
+	for i in range(0, rows*cols, cols):
+		temp = []
+		for j in range(cols):
+			temp.append(j+i)
+		arr.append(temp)
+
+	for i in range(rows):
+		for j in range(cols):
+			print arr[i][j],
+		print
+
+def getPos(pos):
 	print
 	print "Position: " + str(pos)
-	print "Down " + str(pos/len(arr))
-	print "Over " + str(pos%len(arr[0])),
+	print "Down " + str(pos/cols)
+	print "Over " + str(pos%cols),
 
 if __name__=="__main__":
 	main()
