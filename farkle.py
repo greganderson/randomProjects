@@ -1,16 +1,7 @@
 import random
 
 def main():
-
-	# TODO: Let the player know if they roll a farkle
-	# TODO: Make the actual playing look a lot cleaner
-	
-
-	print
-	print
-	print "Welcome to Farkle!"
-	print
-	print
+	print "\n\nWelcome to Farkle!\n\n"
 	raw_input("Press enter for instructions:")
 	print
 	print
@@ -32,10 +23,14 @@ def main():
 	score = 0
 	dice = 5
 
+	print "\nLet the game begin!"
+
 	# Play the game
 	while not getWinner(players):
 		for player in players:
-			print "\n\n" + player[0] + " -> " + str(player[1]) + "\n\n"
+			print
+			raw_input("Press enter to go to the next player: ")
+			print "\n\n\n" + player[0] + " -> " + str(player[1]) + "\n\n"
 			(score, dice) = takeTurn(score, dice)
 			addScore(players, player[0], player[1], player[2], score)
 
@@ -76,7 +71,7 @@ def takeTurn(points, dice):
 				print
 				print "Points: " + str(points)
 				print
-				answer = input("Keep score and roll with " + str(dice) + " dice? (1=yes, 0=no) ")
+				answer = input("Keep rolling with " + str(dice) + " dice, or stop and keep your score? (1=keep rolling, 0=stop) ")
 			else:
 				answer = 1
 				keep_previous = False
@@ -91,6 +86,7 @@ def takeTurn(points, dice):
 
 				# No points were rolled, therefore end of turn
 				if rollPoints == 0:
+					print "\nSorry.  You rolled 0 points."
 					return (0, 5)
 
 				dice_kept = chooseDiceToKeep(roll)
@@ -102,8 +98,8 @@ def takeTurn(points, dice):
 				return points, dice
 			else:
 				print "Please only input a 1 or a 0."
-		except NameError:
-			print "Please only input a 1 or a 0."
+		except SyntaxError:
+			print "\nPlease only input a 1 or a 0."
 	
 
 
@@ -116,6 +112,7 @@ def takeTurn(points, dice):
 def getRemaining(roll, dice_kept):
 
 	# Remove the desired dice, and return how many dice are left
+	print dice_kept
 	for e in dice_kept:
 		roll.remove(e)
 	# All dice had points, so reset to 5
@@ -145,22 +142,35 @@ def getPointDice(roll):
 def chooseDiceToKeep(roll):
 
 	(combo, x_times) = getCombos(roll)
-	while True:
+	
+	# Rolled a farkle
+	if getComboOrFarklePoints(roll) == 1500:
+		print "\n********"
+		print "*FARKLE*"
+		print "********\n"
+		dice_kept = []
+		for e in roll:
+			dice_kept.append(e)
+		return dice_kept
 
-		dice_kept = raw_input("Which dice would you like to keep, enter 0 to stop (e.g. \"1 1 5\" or \"0\"): ")
+	while True:
+		tryAgain = False	# Tells whether the loop needs to try again
+		dice_kept = raw_input("Which dice would you like to keep (e.g. \"1 1 5\" or \"3 3 3 1\"): ")
 		dice_kept = dice_kept.split()
+
+		for e in dice_kept:
+			if int(e) < 1 or int(e) > 6:
+				print "Please only enter dice you have."
+				tryAgain = True
+				break
+		if tryAgain:
+			continue
 
 		# Didn't enter any dice
 		if len(dice_kept) == 0:
 			"Please enter at least 1 die to keep."
 			continue
 
-		# 0 was part of dice_kept
-		if "0" in dice_kept:
-			if len(dice_kept) == 1:
-				return roll
-			print "You included other number along with \"0\"."
-			continue
 
 		# Loop through all of the non-point dice and check them
 		a = [2, 3, 4, 6]	# All of the non-point numbers
@@ -178,28 +188,29 @@ def chooseDiceToKeep(roll):
 					break
 
 		if goodDice:
-			if dice_kept.count("1") > getOnes(roll):
+			if dice_kept.count("1") > roll.count(1):
 				print "You don't have that many 1's."
 				continue
-			if dice_kept.count("5") > getFives(roll):
+			if dice_kept.count("5") > roll.count(5):
 				print "You don't have that many 5's."
 				continue
 			return toInt(dice_kept)
 
 
+# Return the total points from the roll
 def getPoints(roll):
 	combo = getComboOrFarklePoints(roll)
 	if combo == None:
-		total = (getOnes(roll) * 100) + (getFives(roll) * 50)
+		total = (roll.count(1) * 100) + (roll.count(5) * 50)
 	elif combo == 1500:
 		total = combo
 	else:
-		if getOnes(roll) >= 3:
-			total = combo + (getFives(roll) * 50)
-		elif getFives(roll) >= 3:
-			total = combo + (getOnes(roll) * 100)
+		if roll.count(1) >= 3:
+			total = combo + (roll.count(5) * 50)
+		elif roll.count(5) >= 3:
+			total = combo + (roll.count(1) * 100)
 		else:
-			total = combo + (getOnes(roll) * 100) + (getFives(roll) * 50)
+			total = combo + (roll.count(1) * 100) + (roll.count(5) * 50)
 	return total
 
 
@@ -223,6 +234,7 @@ def getCombos(roll):
 	return 0, 0
 
 
+# Returns the points from a combo or farkle
 def getComboOrFarklePoints(roll):
 	# Count for each number the dice have rolled
 	one = roll.count(1)
@@ -249,23 +261,12 @@ def getComboOrFarklePoints(roll):
 			return combo * 100 * (2*(x_times-3))
 
 
-def findNumberOfFarkles(num):
-	# Test how many farkles are rolled in given number of rolls
-	total = 0
-	for i in range(num):
-		roll = rollAll()
-		if getComboOrFarklePoints(roll) == 1500:
-			total += 1
-	return total
-
-
+# Roll all 5 dice
 def rollAll():
-	roll = []
-	for i in range(5):
-		roll.append(rollDie())
-	return roll
+	return rollRemaining(5)
 
 
+# Roll the number of dice given
 def rollRemaining(num):
 	roll = []
 	for i in range(num):
@@ -273,16 +274,10 @@ def rollRemaining(num):
 	return roll
 
 
+# Rolls a single die
 def rollDie():
 	return random.randrange(1, 7)
 
-
-def getOnes(roll):
-	return roll.count(1)
-
-
-def getFives(roll):
-	return roll.count(5)
 
 # Takes an array of String integers and converts
 # them to real integers
