@@ -1,0 +1,25 @@
+#!/usr/bin/python
+
+# Maximum = 4882
+# Minimum = 0, though this turns the screen completely black
+
+import sys
+import os
+
+# Changes the brightness to the given value between 10-4882
+def main():
+	lst = sys.argv
+
+	if not len(lst) == 2:
+		os.system('echo \'Current Brightness: \' && cat /sys/class/backlight/intel_backlight/brightness')
+		print "Usage: brightness <10-4882>"
+		sys.exit(1)
+
+	if int(lst[1]) < 10 or int(lst[1]) > 4882:
+		print "Please enter number between 10 and 4882"
+		print "Usage: ./script.py <10-4882>"
+		sys.exit(1)
+
+	os.system("echo " + lst[1] + " | sudo tee /sys/class/backlight/intel_backlight/brightness") 
+
+main()

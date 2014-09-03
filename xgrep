@@ -1,0 +1,36 @@
+#!/usr/bin/python
+
+import commands
+import sys
+
+# xgrep, x for exclude
+# 
+# This will recursively grep starting in the directory you are in.  The
+# first command line parameter is the string you want to grep, the second
+# parameter is the string where if it occurs in an output line, the output
+# line is not printed.
+def main():
+	usage = "Usage: xgrep <string to grep> <string to subtract from output>"
+
+	lst = sys.argv
+
+	# Make sure the correct number of arguments are supplied
+	if len(lst) < 3:
+		print "error: not enough arguments supplied"
+		print usage
+		exit(1)
+	if len(lst) > 3:
+		print "error: too many arguments supplied"
+		print usage
+		exit(1)
+
+	status, output = commands.getstatusoutput("grep -nr \"" + lst[1] + "\"")
+
+
+	# If line contains string we want excluded, don't print it
+	lines = output.split('\n')
+	for line in lines:
+		if lst[2] not in line:
+			print line
+
+main()

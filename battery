@@ -1,0 +1,14 @@
+#!/usr/bin/python
+
+import commands
+
+# Displays the current battery percentage
+def main():
+	status, full = commands.getstatusoutput("cat /sys/class/power_supply/BAT0/charge_full")
+	status, current = commands.getstatusoutput("cat /sys/class/power_supply/BAT0/charge_now")
+
+	pct = float(current) / float(full) * 100
+
+	print("Battery: %.2f%%" % pct)
+
+main()

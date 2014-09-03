@@ -1,0 +1,24 @@
+#!/usr/bin/python
+
+
+# A more usable (in my opinion) version of ls -R
+
+
+import os
+import commands
+
+def getDirectoryContents(path, currentDir):
+	status, output = commands.getstatusoutput('ls ' + path)
+	output = output.split('\n')
+	for f in output:
+		# This will be the case when the directory is empty
+		if f == '':
+			continue
+		f = path + '/' + f
+		if os.path.isdir(f):
+			getDirectoryContents(f, currentDir)
+		else:
+			print '.' + f[len(currentDir):]
+
+currentDir = os.getcwd()
+getDirectoryContents(currentDir, currentDir)
